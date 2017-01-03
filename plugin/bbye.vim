@@ -78,11 +78,8 @@ function! s:bdelete(bang, buffer_name)
 
 	" If it hasn't been already deleted by &bufhidden, end its pains now.
 	" Unless it previously was an unnamed buffer and :enew returned it again.
-	if bufexists(buffer) && buffer != bufnr("%")
-          try
-            exe "bdelete" . a:bang . " " . buffer
-          catch /E516/ " Fix for fugitive buffers.
-          endtry
+	if buflisted(buffer) && buffer != bufnr("%")
+		exe "bdelete" . a:bang . " " . buffer
 	endif
 endfunction
 
