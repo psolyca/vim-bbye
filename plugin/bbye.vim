@@ -42,14 +42,25 @@ function! s:bdelete(bang, buffer_name)
 		return s:warn("E516: No buffers were deleted. No match for ".a:buffer_name)
 	endif
 
-	if getbufvar(buffer, "&modified") && empty(a:bang)
-		let error = "E89: No write since last change for buffer "
-		return s:warn(error . buffer . " (add ! to override)")
-	endif
+    let bang = a:bang
+    if getbufvar(buffer, "&modified") && empty(bang)
+        echohl WarningMsg
+        echo 'Save "' . @% . '" ([Y]es / (N)o / (C)ancel)? '
+        echohl None
+        let c = getchar()
+        redraw
+        if c == 13 || c == 121
+            w!
+        elseif c == 110
+            let bang = '!'
+        else
+            return 0
+        endif
+    endif
 
 	" If the buffer is set to delete and it contains changes, we can't switch
 	" away from it. Hide it before eventual deleting:
-	if getbufvar(buffer, "&modified") && !empty(a:bang)
+	if getbufvar(buffer, "&modified") && !empty(bang)
 		call setbufvar(buffer, "&bufhidden", "hide")
 	endif
 
@@ -68,7 +79,7 @@ function! s:bdelete(bang, buffer_name)
 		" If found a new buffer for this window, mission accomplished:
 		if bufnr("%") != buffer | continue | endif
 
-		call s:new(a:bang)
+		call s:new(bang)
 	endfor
 
 	" Because tabbars and other appearing/disappearing windows change
@@ -79,7 +90,7 @@ function! s:bdelete(bang, buffer_name)
 	" If it hasn't been already deleted by &bufhidden, end its pains now.
 	" Unless it previously was an unnamed buffer and :enew returned it again.
 	if buflisted(buffer) && buffer != bufnr("%")
-		exe "bdelete" . a:bang . " " . buffer
+		exe "bdelete" . bang . " " . buffer
 	endif
 endfunction
 
