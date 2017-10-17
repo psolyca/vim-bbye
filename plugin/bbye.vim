@@ -49,6 +49,7 @@ function! s:bdelete(bang, buffer_name)
         echohl None
         let c = getchar()
         redraw
+        echo ' '
         if c == 13 || c == 121
             w!
         elseif c == 110
@@ -105,7 +106,7 @@ function! s:str2bufnr(buffer)
 endfunction
 
 function! s:new(bang)
-	exe "enew" . a:bang
+	exe "enew" . bang
 
 	setl noswapfile
 	" If empty and out of sight, delete it right away:
