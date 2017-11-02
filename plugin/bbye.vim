@@ -106,7 +106,7 @@ function! s:str2bufnr(buffer)
 endfunction
 
 function! s:new(bang)
-	exe "enew" . bang
+	exe "enew" . a:bang
 
 	setl noswapfile
 	" If empty and out of sight, delete it right away:
